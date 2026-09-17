@@ -1,0 +1,251 @@
+-- Restore the Git-safe Wingate tax-portal demo dump into Supabase.
+-- Run AFTER APPLY_IN_SUPABASE.sql. Safe to re-run (upserts firm_id).
+-- Does not include live client files, reset tokens, or uploaded PDFs.
+
+insert into wingate_tax_json_store (firm_id, dump, updated_at)
+values (
+  'wingate-accountants-ltd',
+  $wingate_seed$
+{
+  "users": [
+    {
+      "id": "usr_accountant",
+      "firmId": "wingate-accountants-ltd",
+      "email": "accountant@wingateaccountants.co.uk",
+      "passwordHash": "1f38f84cbdbce50d4d2eec99c2935ee1:8ede18518bd82441491af5d909596f96490b7e9109180f21abb06f7f3c252d26",
+      "name": "Alex Rahman CTA",
+      "firstName": "Alex",
+      "lastName": "Rahman",
+      "mobile": "01615 314179",
+      "role": "accountant",
+      "emailVerified": true,
+      "emailVerifiedAt": "2026-09-14T16:12:30.641Z",
+      "termsAcceptedAt": "2026-09-14T16:12:30.641Z",
+      "privacyAcceptedAt": "2026-09-14T16:12:30.641Z",
+      "twoFactorEnabled": false,
+      "twoFactorSecret": null,
+      "createdAt": "2026-09-14T16:12:30.641Z"
+    },
+    {
+      "id": "usr_client",
+      "firmId": "wingate-accountants-ltd",
+      "email": "client@wingateaccountants.co.uk",
+      "passwordHash": "51995440af79add37642aab6737dc9d3:d60278cd0d1cdcab2b9e993af042675131e743e5e0975355a7a91220fdec8a60",
+      "name": "Jordan Hale",
+      "firstName": "Jordan",
+      "lastName": "Hale",
+      "mobile": "07700 900123",
+      "role": "client",
+      "emailVerified": true,
+      "emailVerifiedAt": "2026-09-14T16:12:30.641Z",
+      "termsAcceptedAt": "2026-09-14T16:12:30.641Z",
+      "privacyAcceptedAt": "2026-09-14T16:12:30.641Z",
+      "twoFactorEnabled": false,
+      "twoFactorSecret": null,
+      "createdAt": "2026-09-14T16:12:30.641Z"
+    }
+  ],
+  "orders": [
+    {
+      "id": "ord_demo_jordan",
+      "firmId": "wingate-accountants-ltd",
+      "userId": "usr_client",
+      "accountantId": "usr_accountant",
+      "taxYear": "2025-26",
+      "planId": "optimised",
+      "status": "accountant_review",
+      "amountGbp": 479,
+      "payment": {
+        "provider": "mock",
+        "status": "paid",
+        "sessionId": "sess_demo",
+        "paidAt": "2026-09-14T16:12:30.641Z"
+      },
+      "taxSummary": null,
+      "createdAt": "2026-09-14T16:12:30.641Z",
+      "updatedAt": "2026-09-14T16:18:46.049Z"
+    }
+  ],
+  "aml": [
+    {
+      "id": "aml_demo",
+      "firmId": "wingate-accountants-ltd",
+      "orderId": "ord_demo_jordan",
+      "userId": "usr_client",
+      "idDocument": {
+        "kind": "passport",
+        "fileId": "file_placeholder_id",
+        "fileName": "passport-photo.jpg"
+      },
+      "proofsOfAddress": [
+        {
+          "kind": "bank_statement",
+          "fileId": "file_placeholder_poa1",
+          "fileName": "bank-july.pdf",
+          "dated": "2026-07-01"
+        },
+        {
+          "kind": "council_tax",
+          "fileId": "file_placeholder_poa2",
+          "fileName": "council-tax.pdf",
+          "dated": "2026-06-15"
+        }
+      ],
+      "selfie": {
+        "kind": "selfie",
+        "fileId": "file_placeholder_selfie",
+        "fileName": "selfie.jpg"
+      },
+      "status": "approved",
+      "riskBand": "low",
+      "staffNotes": "Demo pack \u2014 identity and two proofs of address on file.",
+      "submittedAt": "2026-09-14T16:12:30.641Z",
+      "reviewedAt": "2026-09-14T16:12:30.641Z"
+    }
+  ],
+  "letters": [
+    {
+      "id": "ltr_demo",
+      "firmId": "wingate-accountants-ltd",
+      "orderId": "ord_demo_jordan",
+      "status": "signed",
+      "pdfFileId": null,
+      "signerName": "Jordan Hale",
+      "signatureDataUrl": null,
+      "signedAt": "2026-09-14T16:12:30.641Z",
+      "generatedAt": "2026-09-14T16:12:30.641Z"
+    }
+  ],
+  "questionnaires": [
+    {
+      "id": "q_demo",
+      "firmId": "wingate-accountants-ltd",
+      "orderId": "ord_demo_jordan",
+      "answers": {
+        "firstName": "Jordan",
+        "lastName": "Hale",
+        "nino": "AB123456C",
+        "dateOfBirth": "1991-04-12",
+        "addressLine1": "14 Quay Street",
+        "city": "Manchester",
+        "postcode": "M3 3HN",
+        "ukResident": true,
+        "maritalStatus": "single",
+        "hasEmployment": true,
+        "employmentPay": 38500,
+        "employmentTaxDeducted": 5280,
+        "employerName": "Northern Digital Ltd",
+        "hasSelfEmployment": true,
+        "tradingName": "Hale Design",
+        "selfEmploymentTurnover": 14200,
+        "selfEmploymentExpenses": 2100,
+        "hasCis": false,
+        "cisGross": 0,
+        "cisTaxDeducted": 0,
+        "hasRental": false,
+        "rentalIncome": 0,
+        "rentalExpenses": 0,
+        "hasInvestments": true,
+        "dividends": 800,
+        "cryptoGains": 0,
+        "shareGains": 0,
+        "hasCgt": false,
+        "otherCgtGains": 0,
+        "cgtLosses": 0,
+        "hasForeign": false,
+        "foreignIncome": 0,
+        "pensionContributions": 2400,
+        "giftAid": 200,
+        "marriageAllowance": false
+      },
+      "estimate": {
+        "totalIncome": 51400,
+        "taxableIncome": 36430,
+        "incomeTax": 7152.25,
+        "class4Ni": 0,
+        "cgt": 0,
+        "taxAlreadyPaid": 5280,
+        "estimatedLiability": 1822.25,
+        "estimatedRefund": 0,
+        "netPosition": 1822.25,
+        "notes": [
+          "PAYE already deducted is set against the Self Assessment estimate.",
+          "This is an estimate for the 2025\u201326 year, not a filed computation or tax advice."
+        ]
+      },
+      "currentSection": "estimate",
+      "completedAt": "2026-09-14T16:12:30.641Z"
+    }
+  ],
+  "documents": [
+    {
+      "id": "doc_demo_p60",
+      "firmId": "wingate-accountants-ltd",
+      "orderId": "ord_demo_jordan",
+      "kind": "p60",
+      "fileId": "file_placeholder_p60",
+      "fileName": "P60-2026.pdf",
+      "uploadedAt": "2026-09-14T16:12:30.641Z",
+      "requested": false,
+      "classifiedAs": "Employment (P60)",
+      "classificationConfidence": "high"
+    }
+  ],
+  "notes": [
+    {
+      "id": "note_demo",
+      "firmId": "wingate-accountants-ltd",
+      "orderId": "ord_demo_jordan",
+      "authorId": "usr_accountant",
+      "kind": "note",
+      "body": "PAYE and freelance design income look consistent. Waiting on CIS confirmation \u2014 client says none.",
+      "createdAt": "2026-09-14T16:12:30.641Z"
+    }
+  ],
+  "messages": [
+    {
+      "id": "msg_demo",
+      "firmId": "wingate-accountants-ltd",
+      "orderId": "ord_demo_jordan",
+      "authorId": "usr_accountant",
+      "authorRole": "accountant",
+      "body": "Thanks Jordan \u2014 I have your questionnaire. If you have a P60 for Northern Digital, upload it here and I will finish the review.",
+      "createdAt": "2026-09-14T16:12:30.641Z"
+    }
+  ],
+  "submissions": [
+    {
+      "id": "hmrc_demo",
+      "firmId": "wingate-accountants-ltd",
+      "orderId": "ord_demo_jordan",
+      "mode": "mock",
+      "status": "not_submitted",
+      "receiptId": null,
+      "submittedAt": null,
+      "sa100FileId": null,
+      "sa302FileId": null,
+      "detail": "Not yet filed with HMRC."
+    }
+  ],
+  "files": [],
+  "authTokens": [],
+  "mailLogs": [],
+  "reminders": [
+    {
+      "id": "rem_demo_renewal",
+      "firmId": "wingate-accountants-ltd",
+      "userId": "usr_client",
+      "orderId": "ord_demo_jordan",
+      "kind": "renewal",
+      "sendAt": "2027-03-01T09:00:00.000Z",
+      "sentAt": null,
+      "subject": "Start next year\u2019s Self Assessment with Wingate",
+      "body": "Your 2025\u201326 Self Assessment is on file. We will email you in March 2027 when 2026\u201327 can be started in the portal."
+    }
+  ]
+}
+$wingate_seed$::jsonb,
+  now()
+)
+on conflict (firm_id) do update
+set dump = excluded.dump, updated_at = now();
