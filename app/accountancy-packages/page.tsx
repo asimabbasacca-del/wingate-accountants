@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { ArrowRight, Clock, ShieldCheck, UserRound } from "lucide-react";
 import { ButtonLink } from "@/components/button-link";
+import { HeroWithPhoto, SitePhoto } from "@/components/site-photo";
+import { ServicePageEnd } from "@/components/service-page-end";
 import { AddOnCard } from "@/components/packages/addon-card";
 import { ComparisonTable } from "@/components/packages/comparison-table";
 import { FAQAccordion } from "@/components/packages/faq-accordion";
@@ -9,6 +11,7 @@ import { ONBOARDING_STEPS, PACKAGE_FAQS } from "@/lib/packages/data";
 import { groupsWithPackages } from "@/lib/packages/catalog";
 import { getPublishedCatalog } from "@/lib/packages/backend";
 import { practiceStore } from "@/lib/practice/store";
+import { JsonLd } from "@/components/json-ld";
 import { SITE } from "@/lib/site";
 
 export const dynamic = "force-dynamic";
@@ -27,50 +30,61 @@ export default async function AccountancyPackagesPage() {
   const addons = catalog.addons;
   const cmsFaqs = await practiceStore.publishedFaqs().catch(() => []);
   const faqs = [
-    ...cmsFaqs.map((item) => ({ question: item.title, answer: item.html })),
+    ...cmsFaqs.map((item) => {
+      const blob = `${item.title} ${item.html}`;
+      if (/\+?\s*VAT|plus VAT|inc VAT/i.test(blob) && /fee|price|package/i.test(blob)) {
+        return {
+          question: "What does the published package fee include?",
+          answer:
+            "The price on each package card is the fee for the work listed. Add-ons such as formation or a registered office are priced separately.",
+        };
+      }
+      return { question: item.title, answer: item.html };
+    }),
     ...PACKAGE_FAQS.filter((item) => !cmsFaqs.some((cms) => cms.title === item.question)),
   ];
 
   return (
     <>
-      <section className="bg-primary text-primary-foreground">
-        <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:py-24">
-          <p className="text-sm font-medium tracking-wide text-accent uppercase">Wingate Accountants Ltd</p>
-          <h1 className="font-heading mt-3 max-w-4xl text-4xl leading-tight font-bold sm:text-5xl">
-            Specialist Accountancy Packages, Fixed Fees, Transparent Pricing
-          </h1>
-          <p className="mt-5 max-w-2xl text-lg text-primary-foreground/85">
-            A named accountant, a same-working-day reply if you contact us before 3pm, and filings kept in line with
-            HMRC and Companies House — without a surprise bill at year end.
-          </p>
-          <ul className="mt-8 grid max-w-3xl gap-4 text-sm sm:grid-cols-3">
-            <li className="flex gap-2">
-              <UserRound className="mt-0.5 size-4 shrink-0 text-accent" aria-hidden />
-              Dedicated accountant on your file
-            </li>
-            <li className="flex gap-2">
-              <Clock className="mt-0.5 size-4 shrink-0 text-accent" aria-hidden />
-              Fast response, with a £50 credit if we miss it
-            </li>
-            <li className="flex gap-2">
-              <ShieldCheck className="mt-0.5 size-4 shrink-0 text-accent" aria-hidden />
-              HMRC and Companies House compliance
-            </li>
-          </ul>
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+      <HeroWithPhoto
+        kicker="Wingate Accountants Ltd"
+        title="Specialist Accountancy Packages, Fixed Fees, Transparent Pricing"
+        imageSrc="/images/practice-office.png"
+        imageAlt="Wingate Accountants practice meeting room"
+        actions={
+          <>
             <ButtonLink href="#packages" className="h-12 bg-accent px-6 text-base text-accent-foreground hover:bg-accent/90">
               View Packages <ArrowRight />
             </ButtonLink>
             <ButtonLink
-              href="/contact-us/"
+              href="/mtd-packages/"
               variant="outline"
               className="h-12 border-white/30 bg-transparent px-6 text-primary-foreground hover:bg-white/10 hover:text-white"
             >
-              Book a Free Consultation
+              MTD packages
             </ButtonLink>
-          </div>
-        </div>
-      </section>
+          </>
+        }
+      >
+        <p>
+          A named accountant, a same-working-day reply if you contact us before 3pm, and filings kept in line with
+          HMRC and Companies House — without a surprise bill at year end.
+        </p>
+        <ul className="mt-6 grid max-w-3xl gap-3 text-sm sm:grid-cols-3">
+          <li className="flex gap-2">
+            <UserRound className="mt-0.5 size-4 shrink-0 text-accent" aria-hidden />
+            Dedicated accountant on your file
+          </li>
+          <li className="flex gap-2">
+            <Clock className="mt-0.5 size-4 shrink-0 text-accent" aria-hidden />
+            Fast response, with a £50 credit if we miss it
+          </li>
+          <li className="flex gap-2">
+            <ShieldCheck className="mt-0.5 size-4 shrink-0 text-accent" aria-hidden />
+            HMRC and Companies House compliance
+          </li>
+        </ul>
+      </HeroWithPhoto>
 
       <nav aria-label="Package groups" className="border-b border-border bg-card">
         <div className="mx-auto flex max-w-6xl gap-2 overflow-x-auto px-4 py-3 sm:px-6">
@@ -86,12 +100,38 @@ export default async function AccountancyPackagesPage() {
         </div>
       </nav>
 
+      <section className="border-b border-border bg-secondary/50">
+        <div className="mx-auto grid max-w-6xl items-center gap-8 px-4 py-10 sm:px-6 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
+          <div>
+            <p className="text-sm font-medium text-primary">Forming a limited company</p>
+            <h2 className="font-heading mt-2 text-2xl font-semibold">Company formation for £150</h2>
+            <p className="mt-3 max-w-2xl text-muted-foreground">
+              Companies House registration, first documents and help with a business bank account. VAT registration if
+              you need it. The fee is £150.
+            </p>
+            <div className="mt-5 flex flex-col gap-3 sm:flex-row">
+              <ButtonLink href="/company-formation/" className="h-11 px-5">
+                Company formation page
+              </ButtonLink>
+              <ButtonLink href="/accountancy-packages/start/?package=small-company&addon=company-formation" variant="outline" className="h-11 px-5">
+                Start formation · £150
+              </ButtonLink>
+            </div>
+          </div>
+          <SitePhoto
+            src="/images/company-formation.png"
+            alt="Reviewing company formation documents"
+            className="aspect-[16/10] min-h-[10rem]"
+          />
+        </div>
+      </section>
+
       <section id="packages" className="mx-auto max-w-6xl scroll-mt-20 space-y-16 px-4 py-16 sm:px-6">
         <div>
           <h2 className="font-heading text-3xl font-semibold">Choose a package</h2>
           <p className="mt-2 max-w-3xl text-muted-foreground">
             Fees are around 5% lower than comparable published specialist packages we reviewed, rounded to a sensible UK
-            monthly figure. All monthly prices are plus VAT unless marked otherwise.
+            monthly figure. The price on each card is the fee we charge.
           </p>
         </div>
         {groups.map(({ group, packages: groupPackages }) => (
@@ -190,6 +230,17 @@ export default async function AccountancyPackagesPage() {
 
       <section id="faq" className="border-t border-border bg-secondary/40 py-16">
         <div className="mx-auto max-w-3xl px-4 sm:px-6">
+          <JsonLd
+            data={{
+              "@context": "https://schema.org",
+              "@type": "FAQPage",
+              mainEntity: faqs.map((item) => ({
+                "@type": "Question",
+                name: item.question,
+                acceptedAnswer: { "@type": "Answer", text: item.answer },
+              })),
+            }}
+          />
           <h2 className="font-heading text-3xl font-semibold">Questions we are asked first</h2>
           <div className="mt-8">
             <FAQAccordion items={faqs} />
@@ -218,6 +269,7 @@ export default async function AccountancyPackagesPage() {
           </div>
         </div>
       </section>
+      <ServicePageEnd slug="accountancy-packages" skipFaq />
     </>
   );
 }

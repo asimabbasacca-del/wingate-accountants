@@ -9,6 +9,7 @@ export const SITE = {
   email: "enquiries@wingateaccountants.co.uk",
   phone: "01615 314179",
   phoneHref: "tel:+441615314179",
+  whatsappHref: "https://wa.me/441615314179",
   address: "128 City Road, London, EC1V 2NX",
   hours: "Monday to Friday, 09:00–17:00",
   companyNumber: "15494836",
@@ -24,6 +25,7 @@ export const NAV = [
 ] as const;
 
 export const NAV_MORE = [
+  { href: "/company-formation/", label: "Company Formation" },
   { href: "/accountancy-packages/", label: "Packages" },
   { href: "/blog/", label: "Blog" },
   { href: "/career/", label: "Career" },
@@ -32,9 +34,12 @@ export const NAV_MORE = [
 export const SERVICE_NAV = [
   { href: "/online-tax-return-preparation-service/", title: "Online Tax Return Preparation Service" },
   { href: "/accountancy-packages/", title: "Accountancy Packages" },
+  { href: "/company-formation/", title: "Company Formation" },
   { href: "/tax-investigations/", title: "Tax Investigations and compliance" },
   { href: "/personal-tax-accountants/", title: "Personal Tax" },
   { href: "/self-assessment-tax-returns/", title: "Self Assessment" },
+  { href: "/making-tax-digital-for-income-tax/", title: "Making Tax Digital" },
+  { href: "/mtd-packages/", title: "MTD Packages" },
   { href: "/hmrc-tax-disclosure-london/", title: "Tax Disclosures" },
   { href: "/capital-gains-tax/", title: "Capital Gains Tax" },
   { href: "/payroll-services/", title: "Payroll" },
@@ -42,9 +47,7 @@ export const SERVICE_NAV = [
   { href: "/vat-accountancy-services/", title: "VAT" },
   { href: "/annual-accounts-services/", title: "Annual Accounts" },
   { href: "/business-tax-planning/", title: "Business Tax Planning" },
-  { href: "/company-formation/", title: "Company Formation" },
   { href: "/construction-industry-scheme/", title: "CIS" },
-  { href: "/making-tax-digital-for-income-tax/", title: "Making Tax Digital" },
 ] as const;
 
 export const HOME_SERVICES = [
@@ -69,8 +72,13 @@ export const HOME_SERVICES = [
     text: "If income, rent or gains were missed, we help you disclose to HMRC the right way — from notification through to agreement.",
   },
   {
-    href: "/payroll-services/",
-    title: "Payroll Services",
-    text: "PAYE, RTI, pensions and CIS payroll for small employers who want the monthly filings done on time.",
+    href: "/making-tax-digital-for-income-tax/",
+    title: "Making Tax Digital (MTD)",
+    text: "Quarterly digital updates for sole traders and landlords, with a basic monthly MTD package and a named accountant.",
+  },
+  {
+    href: "/company-formation/",
+    title: "Company formation",
+    text: "Companies House registration, first documents and VAT help if you need it. Formation is £150.",
   },
 ] as const;

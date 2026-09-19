@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { InvestigationArticle } from "@/components/investigations/article";
+import { HeroWithPhoto } from "@/components/site-photo";
+import { ServicePageEnd } from "@/components/service-page-end";
 import { getInvestigationTopic, getInvestigationTopics, investigationPath } from "@/lib/investigations/catalog";
 import { SITE } from "@/lib/site";
 
@@ -29,16 +31,24 @@ export default async function InvestigationTopicPage({ params }: Props) {
 
   return (
     <>
-      <header className="bg-primary text-primary-foreground">
-        <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6">
-          <Link href="/tax-investigations/" className="text-sm text-primary-foreground/70 hover:text-white">
-            ← Tax Investigations and compliance
+      <HeroWithPhoto
+        kicker="Tax Investigations and compliance"
+        title={topic.title}
+        imageSrc="/images/tax-investigation-meeting.png"
+        imageAlt="Accountant and client reviewing HMRC correspondence"
+        actions={
+          <Link
+            href="/tax-investigations/"
+            className="text-sm text-primary-foreground/80 underline-offset-2 hover:underline"
+          >
+            ← All investigation topics
           </Link>
-          <h1 className="font-heading mt-4 max-w-3xl text-3xl font-bold leading-tight sm:text-4xl">{topic.title}</h1>
-          <p className="mt-4 max-w-2xl text-primary-foreground/80">{topic.summary}</p>
-        </div>
-      </header>
+        }
+      >
+        <p>{topic.summary}</p>
+      </HeroWithPhoto>
       <InvestigationArticle topic={topic} />
+      <ServicePageEnd slug="tax-investigations" skipFaq />
     </>
   );
 }

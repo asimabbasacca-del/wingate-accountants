@@ -56,13 +56,13 @@ export function packagePriceLabel(pkg: Package): string {
     return "Price on application";
   }
   if (pkg.billing === "annual" && pkg.annualPrice != null) {
-    return `${formatMoney(pkg.annualPrice)} ${pkg.vatNote}`.trim();
+    return formatMoney(pkg.annualPrice);
   }
   if (pkg.monthlyPrice != null) {
-    return `${formatMoney(pkg.monthlyPrice)} ${pkg.vatNote}`.trim();
+    return formatMoney(pkg.monthlyPrice);
   }
   if (pkg.annualPrice != null) {
-    return `${formatMoney(pkg.annualPrice)} ${pkg.vatNote}`.trim();
+    return formatMoney(pkg.annualPrice);
   }
   return "Price on application";
 }
@@ -75,7 +75,7 @@ export function packagePricePeriod(pkg: Package): string {
 }
 
 export function addOnPriceLabel(addon: AddOn): string {
-  return `${formatMoney(addon.price)} ${addon.vatNote} ${addon.unit}`.replace(/\s+/g, " ").trim();
+  return `${formatMoney(addon.price)} ${addon.unit}`.replace(/\s+/g, " ").trim();
 }
 
 export function choosePackageHref(pkg: Package, addonSlug?: string): string {

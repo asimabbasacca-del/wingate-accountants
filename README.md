@@ -20,6 +20,12 @@ Hub: http://127.0.0.1:43191/tax-investigations/
 
 Side pages (HMRC enquiry, personal/company/VAT/PAYE, COP8/COP9, disclosure, tribunal and others) live under `/tax-investigations/<topic>/`. Copy is original Wingate wording covering the same investigation topics as a specialist enquiry practice. Edit `lib/investigations/data.ts`.
 
+## Company formation
+
+Dedicated page: http://127.0.0.1:43191/company-formation/
+
+UK limited company incorporation is **£150**. Checkout uses `/accountancy-packages/start/?package=small-company&addon=company-formation`.
+
 ## Online Tax Return Preparation Service
 
 Primary Self Assessment onboarding on the same Wingate website (header, branding and navigation):
@@ -58,7 +64,7 @@ Open http://127.0.0.1:43191
 
 This folder is the website. In Vercel set **Root Directory** to `wingate` (do not deploy the repo root).
 
-Full checklist: `docs/LAUNCH.md`.
+Copy-paste checklist (Supabase SQL, GitHub, Vercel env): `docs/GO_LIVE.md`. Full notes: `docs/LAUNCH.md`.
 
 Environment variables (Production + Preview):
 

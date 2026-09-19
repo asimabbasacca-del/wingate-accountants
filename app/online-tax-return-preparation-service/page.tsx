@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, Check, FileCheck, Lock, PoundSterling, Shield, Users } from "lucide-react";
+import { ArrowRight, FileCheck, Lock, PoundSterling, Shield, Users } from "lucide-react";
 import { ButtonLink } from "@/components/button-link";
 import { StartNowButton } from "@/components/tax-returns/start-now-button";
-import { PLANS } from "@/lib/tax-returns/plans";
+import { TaxReturnPlanCards } from "@/components/tax-returns/plan-cards";
+import { HeroWithPhoto, SitePhoto } from "@/components/site-photo";
+import { ServicePageEnd } from "@/components/service-page-end";
 import { SITE } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -36,17 +38,13 @@ const JOURNEY = [
 export default function OnlineTaxReturnPreparationServicePage() {
   return (
     <>
-      <section className="bg-primary text-primary-foreground">
-        <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:py-24">
-          <p className="text-sm font-medium tracking-wide text-accent uppercase">Wingate Accountants Ltd · Self Assessment</p>
-          <h1 className="font-heading mt-3 max-w-4xl text-4xl leading-tight font-bold sm:text-5xl">
-            Online Tax Return Preparation Service
-          </h1>
-          <p className="mt-5 max-w-2xl text-lg text-primary-foreground/80">
-            The primary onboarding journey for Self Assessment and personal tax clients. Same Wingate branding, same
-            accountants, a client account that takes you from package choice through to the HMRC receipt.
-          </p>
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+      <HeroWithPhoto
+        kicker="Wingate Accountants Ltd · Self Assessment"
+        title="Online Tax Return Preparation Service"
+        imageSrc="/images/accounts-ledger-desk.png"
+        imageAlt="Ledger, invoices and calculator on an accountant’s desk"
+        actions={
+          <>
             <StartNowButton className="h-12 bg-accent px-6 text-base text-accent-foreground hover:bg-accent/90">
               Start Now <ArrowRight />
             </StartNowButton>
@@ -57,9 +55,14 @@ export default function OnlineTaxReturnPreparationServicePage() {
             >
               View Packages
             </ButtonLink>
-          </div>
-        </div>
-      </section>
+          </>
+        }
+      >
+        <p>
+          The primary onboarding journey for Self Assessment and personal tax clients. Same Wingate branding, same
+          accountants, a client account that takes you from package choice through to the HMRC receipt.
+        </p>
+      </HeroWithPhoto>
 
       <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
         <h2 className="font-heading text-3xl font-semibold">What is included</h2>
@@ -79,47 +82,35 @@ export default function OnlineTaxReturnPreparationServicePage() {
           <h2 className="font-heading text-3xl font-semibold">Tax return packages</h2>
           <p className="mt-2 max-w-2xl text-muted-foreground">
             Individuals only. Limited companies and LLPs use a separate accounts engagement. Prices are for one person’s
-            2025–26 Self Assessment with Wingate Accountants Limited.
+            2025–26 Self Assessment with Wingate Accountants Limited: £250, £325, or £25 a month. See the{" "}
+            <Link href="/self-assessment-tax-returns/" className="font-medium text-primary underline-offset-2 hover:underline">
+              Self Assessment service
+            </Link>{" "}
+            page for who needs to file and a full comparison.
           </p>
-          <div className="mt-8 grid gap-6 lg:grid-cols-3">
-            {PLANS.map((plan, index) => (
-              <article
-                key={plan.id}
-                className={`flex flex-col rounded-2xl border bg-card p-6 ${index === 1 ? "border-accent shadow-md" : "border-border"}`}
-              >
-                {index === 1 ? (
-                  <p className="text-xs font-semibold tracking-wide text-accent uppercase">Most people choose this</p>
-                ) : null}
-                <h3 className="font-heading mt-2 text-2xl font-semibold">{plan.name}</h3>
-                <p className="mt-2 text-3xl font-semibold">{plan.priceLabel}</p>
-                <p className="mt-2 text-sm text-muted-foreground">{plan.tagline}</p>
-                <ul className="mt-5 flex-1 space-y-2 text-sm">
-                  {plan.highlights.map((item) => (
-                    <li key={item} className="flex gap-2">
-                      <Check className="mt-0.5 size-4 shrink-0 text-primary" />
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-                <StartNowButton planId={plan.id} className="mt-6 h-11">
-                  Start Now
-                </StartNowButton>
-              </article>
-            ))}
-          </div>
+          <TaxReturnPlanCards />
         </div>
       </section>
 
       <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
-        <h2 className="font-heading text-3xl font-semibold">How the client journey works</h2>
-        <ol className="mt-8 grid gap-3 md:grid-cols-2">
-          {JOURNEY.map((step, index) => (
-            <li key={step} className="flex gap-3 rounded-2xl border border-border bg-card p-4 text-sm">
-              <span className="font-heading text-lg text-accent">{index + 1}</span>
-              <span>{step}</span>
-            </li>
-          ))}
-        </ol>
+        <div className="grid items-center gap-10 lg:grid-cols-2">
+          <div>
+            <h2 className="font-heading text-3xl font-semibold">How the client journey works</h2>
+            <ol className="mt-8 grid gap-3">
+              {JOURNEY.map((step, index) => (
+                <li key={step} className="flex gap-3 rounded-2xl border border-border bg-card p-4 text-sm">
+                  <span className="font-heading text-lg text-accent">{index + 1}</span>
+                  <span>{step}</span>
+                </li>
+              ))}
+            </ol>
+          </div>
+          <SitePhoto
+            src="/images/accountant-client-meeting.png"
+            alt="Wingate accountant meeting a Self Assessment client"
+            className="aspect-[4/3] min-h-[16rem]"
+          />
+        </div>
         <p className="mt-6 text-sm text-muted-foreground">
           MTD for Income Tax bridging is in development. We still prepare and file the Self Assessment; the portal will
           hold the live HMRC receipt when those credentials are connected.
@@ -154,6 +145,7 @@ export default function OnlineTaxReturnPreparationServicePage() {
           </p>
         </div>
       </section>
+      <ServicePageEnd slug="online-tax-return-preparation-service" />
     </>
   );
 }

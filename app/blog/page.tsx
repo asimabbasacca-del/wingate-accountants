@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { CardPhoto } from "@/components/site-photo";
 import { getLivePosts, getPosts } from "@/lib/content";
 import { practiceStore } from "@/lib/practice/store";
 import { SITE } from "@/lib/site";
@@ -19,23 +20,35 @@ export default async function BlogPage() {
   const cms = await practiceStore.publishedPosts().catch(() => []);
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
-      <h1 className="font-heading text-4xl font-bold">Blog</h1>
-      <p className="mt-4 max-w-2xl text-muted-foreground">
-        Posts from the current Wingate website stay on their original URLs. Additional original
-        guides on UK tax topics published from 2025 onward sit in Extra guides, with Wingate titles,
-        meta descriptions and canonical tags.
-      </p>
+    <>
+      <section className="bg-primary text-primary-foreground">
+        <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 py-14 sm:px-6 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)]">
+          <div>
+            <p className="text-sm font-medium tracking-wide text-accent uppercase">Wingate Accountants</p>
+            <h1 className="font-heading mt-3 text-4xl font-bold">Blog</h1>
+            <p className="mt-4 max-w-2xl text-primary-foreground/80">
+              Posts from the current Wingate website stay on their original URLs. Additional original guides on UK tax
+              topics published from 2025 onward sit in Extra guides, with Wingate titles, meta descriptions and
+              canonical tags.
+            </p>
+          </div>
+          <CardPhoto slug="blog" className="min-h-[12rem]" />
+        </div>
+      </section>
+      <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
 
       {cms.length ? (
         <>
           <h2 className="font-heading mt-12 text-2xl font-semibold">From the practice CMS</h2>
           <div className="mt-6 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {cms.map((post) => (
-              <Link key={post.id} href={`/${post.slug}/`} className="rounded-xl border border-border bg-card p-6 hover:shadow-md">
+              <Link key={post.id} href={`/${post.slug}/`} className="overflow-hidden rounded-xl border border-border bg-card hover:shadow-md">
+                <CardPhoto slug={post.slug} className="rounded-none" />
+                <div className="p-6">
                 <p className="text-xs text-muted-foreground">{post.updatedAt.slice(0, 10)}</p>
                 <h3 className="font-heading mt-2 font-semibold leading-snug">{post.title}</h3>
                 <p className="mt-2 line-clamp-3 text-sm text-muted-foreground">{post.description}</p>
+                </div>
               </Link>
             ))}
           </div>
@@ -45,10 +58,13 @@ export default async function BlogPage() {
       <h2 className="font-heading mt-12 text-2xl font-semibold">From the current website</h2>
       <div className="mt-6 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {live.map((post) => (
-          <Link key={post.slug} href={post.path} className="rounded-xl border border-border bg-card p-6 hover:shadow-md">
+          <Link key={post.slug} href={post.path} className="overflow-hidden rounded-xl border border-border bg-card hover:shadow-md">
+            <CardPhoto slug={post.slug} className="rounded-none" />
+            <div className="p-6">
             <p className="text-xs text-muted-foreground">{post.date}</p>
             <h3 className="font-heading mt-2 font-semibold leading-snug">{post.title}</h3>
             <p className="mt-2 line-clamp-3 text-sm text-muted-foreground">{post.excerpt}</p>
+            </div>
           </Link>
         ))}
       </div>
@@ -60,13 +76,17 @@ export default async function BlogPage() {
       </p>
       <div className="mt-6 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {extra.map((post) => (
-          <Link key={post.slug} href={post.path} className="rounded-xl border border-border bg-card p-6 hover:shadow-md">
+          <Link key={post.slug} href={post.path} className="overflow-hidden rounded-xl border border-border bg-card hover:shadow-md">
+            <CardPhoto slug={post.slug} className="rounded-none" />
+            <div className="p-6">
             <p className="text-xs text-muted-foreground">{post.date} · extra</p>
             <h3 className="font-heading mt-2 font-semibold leading-snug">{post.title}</h3>
             <p className="mt-2 line-clamp-3 text-sm text-muted-foreground">{post.excerpt}</p>
+            </div>
           </Link>
         ))}
       </div>
-    </div>
+      </div>
+    </>
   );
 }

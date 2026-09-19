@@ -19,10 +19,11 @@ export function CheckoutForm({
     const match = packages.find((item) => item.slug === initial || item.id === initial);
     return match?.id ?? packages[0]?.id ?? "";
   });
+  const selected = packages.find((item) => item.id === packageId);
+  const [interval, setInterval] = useState(selected?.billing === "monthly" ? "month" : "once");
   const [status, setStatus] = useState(
     abandoned ? "Checkout was not completed. Pay below, or ask us to email a reminder." : "",
   );
-  const selected = packages.find((item) => item.id === packageId);
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -54,8 +55,13 @@ export function CheckoutForm({
         Package
         <select
           className="mt-1.5 h-10 w-full rounded-lg border border-input px-2 text-sm"
-          value={packageId}
-          onChange={(e) => setPackageId(e.target.value)}
+            value={packageId}
+            onChange={(e) => {
+              const nextId = e.target.value;
+              setPackageId(nextId);
+              const next = packages.find((item) => item.id === nextId);
+              setInterval(next?.billing === "monthly" ? "month" : "once");
+            }}
         >
           {packages.map((pkg) => (
             <option key={pkg.id} value={pkg.id}>
@@ -67,7 +73,12 @@ export function CheckoutForm({
       {selected?.billing !== "quote" ? (
         <label className="block text-sm font-medium">
           Billing
-          <select name="interval" className="mt-1.5 h-10 w-full rounded-lg border border-input px-2 text-sm" defaultValue="once">
+          <select
+            name="interval"
+            className="mt-1.5 h-10 w-full rounded-lg border border-input px-2 text-sm"
+            value={interval}
+            onChange={(e) => setInterval(e.target.value)}
+          >
             <option value="once">One-off</option>
             <option value="month">Monthly subscription</option>
             <option value="quarter">Quarterly subscription</option>

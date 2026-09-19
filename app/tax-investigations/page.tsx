@@ -3,6 +3,8 @@ import Link from "next/link";
 import { ShieldCheck, Scale, FileSearch, Handshake } from "lucide-react";
 import { ButtonLink } from "@/components/button-link";
 import { InvestigationSidebar } from "@/components/investigations/sidebar";
+import { HeroWithPhoto, SitePhoto } from "@/components/site-photo";
+import { ServicePageEnd } from "@/components/service-page-end";
 import { INVESTIGATION_GROUPS } from "@/lib/investigations/data";
 import { investigationPath, topicsForGroup } from "@/lib/investigations/catalog";
 import { SITE } from "@/lib/site";
@@ -40,17 +42,13 @@ const PROMISES = [
 export default function TaxInvestigationsHubPage() {
   return (
     <>
-      <section className="bg-primary text-primary-foreground">
-        <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:py-24">
-          <p className="text-sm font-medium tracking-wide text-accent uppercase">{SITE.legalName}</p>
-          <h1 className="font-heading mt-3 max-w-4xl text-4xl leading-tight font-bold sm:text-5xl">
-            Tax Investigations and compliance
-          </h1>
-          <p className="mt-5 max-w-2xl text-lg text-primary-foreground/85">
-            If HMRC has opened an enquiry, sent a nudge letter, or you need to put historic tax right, a named
-            accountant at Wingate takes the file. Same working-day reply if you contact us before 3pm.
-          </p>
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+      <HeroWithPhoto
+        kicker={SITE.legalName}
+        title="Tax Investigations and compliance"
+        imageSrc="/images/tax-investigation-meeting.png"
+        imageAlt="Accountant and client reviewing HMRC correspondence"
+        actions={
+          <>
             <ButtonLink href="/contact-us/" className="h-12 bg-accent px-6 text-base text-accent-foreground hover:bg-accent/90">
               Free confidential discussion
             </ButtonLink>
@@ -61,9 +59,14 @@ export default function TaxInvestigationsHubPage() {
             >
               Call {SITE.phone}
             </ButtonLink>
-          </div>
-        </div>
-      </section>
+          </>
+        }
+      >
+        <p>
+          If HMRC has opened an enquiry, sent a nudge letter, or you need to put historic tax right, a named accountant
+          at Wingate takes the file. Same working-day reply if you contact us before 3pm.
+        </p>
+      </HeroWithPhoto>
 
       <div className="mx-auto grid max-w-6xl gap-10 px-4 py-16 sm:px-6 lg:grid-cols-[17rem_minmax(0,1fr)]">
         <InvestigationSidebar />
@@ -73,6 +76,11 @@ export default function TaxInvestigationsHubPage() {
             case. The pages on the left cover the same ground as a specialist investigation practice — written for
             Wingate clients in London and nationwide, and tied into the filings we already do for you.
           </p>
+          <SitePhoto
+            src="/images/practice-office.png"
+            alt="Private meeting room for tax investigation discussions"
+            className="mt-8 aspect-[16/9] min-h-[12rem]"
+          />
           <div className="mt-10 grid gap-4 sm:grid-cols-2">
             {PROMISES.map((item) => (
               <div key={item.title} className="rounded-2xl border border-border bg-card p-5">
@@ -120,6 +128,7 @@ export default function TaxInvestigationsHubPage() {
           </section>
         </div>
       </div>
+      <ServicePageEnd slug="tax-investigations" />
     </>
   );
 }

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Libre_Baskerville, Source_Sans_3 } from "next/font/google";
 import { SiteChrome } from "@/components/site-chrome";
+import { JsonLd, localBusinessJsonLd } from "@/components/json-ld";
 import { SITE } from "@/lib/site";
 import "./globals.css";
 
@@ -35,8 +36,9 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en-GB" className={`${body.variable} ${heading.variable} h-full`}>
+    <html lang="en-GB" className={`${body.variable} ${heading.variable} h-full scroll-smooth`}>
       <body className="flex min-h-full flex-col font-sans antialiased">
+        <JsonLd data={localBusinessJsonLd()} />
         <SiteChrome>{children}</SiteChrome>
       </body>
     </html>

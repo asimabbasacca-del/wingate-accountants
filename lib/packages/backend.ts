@@ -84,7 +84,7 @@ function mapPackage(row: PackageRow, featureIds: string[]): Package {
     groupId: row.group_id,
     monthlyPrice: money(row.monthly_price),
     annualPrice: money(row.annual_price),
-    vatNote: row.vat_note,
+    vatNote: "",
     priceNote: row.price_note || undefined,
     billing: row.billing,
     description: row.description,
@@ -106,6 +106,36 @@ type Catalog = {
   features: PackageFeature[];
   addons: AddOn[];
 };
+
+const MTD_IDS = new Set(["mtd-essentials", "mtd-full"]);
+
+function overlayLocalMtd(catalog: Catalog): Catalog {
+  const localById = new Map(PACKAGES.map((item) => [item.id, item]));
+  const packages = catalog.packages.map((pkg) => {
+    const local = localById.get(pkg.id);
+    const merged = local && MTD_IDS.has(pkg.id) ? { ...pkg, ...local } : pkg;
+    return { ...merged, vatNote: "" };
+  });
+  for (const id of MTD_IDS) {
+    if (!packages.some((pkg) => pkg.id === id)) {
+      const local = localById.get(id);
+      if (local) packages.push({ ...local, vatNote: "" });
+    }
+  }
+  const groups = catalog.groups.some((group) => group.id === "mtd")
+    ? catalog.groups
+    : [...catalog.groups, ...PACKAGE_GROUPS.filter((group) => group.id === "mtd")];
+  const addons = catalog.addons.map((addon) => {
+    const local = ADD_ONS.find((item) => item.id === addon.id);
+    const merged = local && addon.id === "company-formation" ? { ...addon, ...local } : addon;
+    return { ...merged, vatNote: "" };
+  });
+  if (!addons.some((addon) => addon.id === "company-formation")) {
+    const local = ADD_ONS.find((item) => item.id === "company-formation");
+    if (local) addons.unshift({ ...local, vatNote: "" });
+  }
+  return { ...catalog, packages, groups, addons };
+}
 
 function assembleCatalog(
   packages: PackageRow[],
@@ -142,7 +172,7 @@ function assembleCatalog(
       name: row.name,
       description: row.description,
       price: money(row.price) ?? 0,
-      vatNote: row.vat_note,
+      vatNote: "",
       unit: row.unit,
       applicablePackageTypes: row.applicable_package_types ?? [],
       isActive: row.is_active,
@@ -237,15 +267,17 @@ export async function getPublishedCatalog(): Promise<Catalog & { source: "neon" 
   const neon = await loadCatalogFromNeon();
   if (neon) {
     const host = process.env.DATABASE_URL || "";
-    return { ...neon, source: /supabase/i.test(host) ? "supabase" : "neon" };
+    return { ...overlayLocalMtd(neon), source: /supabase/i.test(host) ? "supabase" : "neon" };
   }
   const remote = await loadCatalogFromSupabase();
-  if (remote) return { ...remote, source: "supabase" };
+  if (remote) return { ...overlayLocalMtd(remote), source: "supabase" };
   return {
-    packages: PACKAGES.filter((item) => item.isActive),
-    groups: PACKAGE_GROUPS,
-    features: PACKAGE_FEATURES,
-    addons: ADD_ONS.filter((item) => item.isActive),
+    ...overlayLocalMtd({
+      packages: PACKAGES.filter((item) => item.isActive),
+      groups: PACKAGE_GROUPS,
+      features: PACKAGE_FEATURES,
+      addons: ADD_ONS.filter((item) => item.isActive),
+    }),
     source: "local",
   };
 }

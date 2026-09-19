@@ -10,6 +10,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: "/blog/", priority: 0.8 },
     { path: "/accountancy-packages/", priority: 0.9 },
     { path: "/online-tax-return-preparation-service/", priority: 0.95 },
+    { path: "/mtd-packages/", priority: 0.9 },
+    { path: "/making-tax-digital-for-income-tax/", priority: 0.9 },
+    { path: "/company-formation/", priority: 0.9 },
     { path: "/tax-returns/", priority: 0.4 },
     { path: "/tax-investigations/", priority: 0.9 },
     { path: "/sign-in/", priority: 0.5 },
@@ -24,7 +27,15 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.75,
   }));
   const pages = getPages()
-    .filter((page) => page.slug !== "tax-investigations")
+    .filter(
+      (page) =>
+        page.slug !== "tax-investigations" &&
+        page.slug !== "making-tax-digital-for-income-tax" &&
+        page.slug !== "making-tax-digital-mtd-accountancy-packages" &&
+        page.slug !== "self-assessment-tax-returns" &&
+        page.slug !== "online-tax-return-preparation-service" &&
+        page.slug !== "company-formation",
+    )
     .map((page) => ({
       url: `${SITE.url}${page.path}`,
       lastModified: now,

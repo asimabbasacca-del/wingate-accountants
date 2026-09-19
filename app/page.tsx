@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { ButtonLink } from "@/components/button-link";
+import { HeroWithPhoto, SitePhoto, CardPhoto } from "@/components/site-photo";
 import { getLivePosts } from "@/lib/content";
 import { HOME_SERVICES, SITE } from "@/lib/site";
 import { practiceStore } from "@/lib/practice/store";
@@ -28,39 +29,36 @@ export default async function HomePage() {
 
   return (
     <>
-      <section className="bg-primary text-primary-foreground">
-        <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:py-24">
-          <p className="text-sm font-medium tracking-wide text-accent uppercase">
-            Professional accountancy and tax advisory
-          </p>
-          <h1 className="font-heading mt-3 max-w-3xl text-4xl leading-tight font-bold sm:text-5xl">
-            {heroTitle}
-          </h1>
-          <p className="mt-5 max-w-2xl text-lg text-primary-foreground/80">
-            {heroText}
-          </p>
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+      <HeroWithPhoto
+        kicker="Professional accountancy and tax advisory"
+        title={heroTitle}
+        imageSrc="/images/accountant-client-meeting.png"
+        imageAlt="Wingate accountant meeting a client"
+        actions={
+          <>
             <ButtonLink href="/accountancy-packages/" className="h-11 bg-accent px-5 text-accent-foreground hover:bg-accent/90">
               View accountancy packages <ArrowRight />
             </ButtonLink>
             <ButtonLink
-              href="/about-us/"
+              href="/mtd-packages/"
               variant="outline"
               className="h-11 border-white/30 bg-transparent px-5 text-primary-foreground hover:bg-white/10 hover:text-white"
             >
-              About us
+              MTD packages
             </ButtonLink>
-          </div>
-          {banner ? (
-            <p className="mt-6 text-sm text-accent">
-              <Link href={banner.html || "/online-tax-return-preparation-service/"} className="underline">
-                {banner.title}
-              </Link>
-              {banner.description ? ` — ${banner.description}` : ""}
-            </p>
-          ) : null}
-        </div>
-      </section>
+          </>
+        }
+      >
+        <p>{heroText}</p>
+        {banner ? (
+          <p className="mt-4 text-sm text-accent">
+            <Link href={banner.html || "/online-tax-return-preparation-service/"} className="underline">
+              {banner.title}
+            </Link>
+            {banner.description ? ` — ${banner.description}` : ""}
+          </p>
+        ) : null}
+      </HeroWithPhoto>
 
       <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
         <h2 className="font-heading text-3xl font-semibold">How we can help</h2>
@@ -116,18 +114,11 @@ export default async function HomePage() {
               Fixed-fee packages, unlimited support and advice, and a technology-driven
               accountancy solution.
             </p>
-            <div className="mt-6 grid grid-cols-2 gap-3 text-sm">
-              {[
-                "Fixed fee packages",
-                "Unlimited support and advice",
-                "Specialist contractor accountants",
-                "Bespoke services",
-              ].map((item) => (
-                <p key={item} className="rounded-lg border border-border bg-card px-3 py-2">
-                  {item}
-                </p>
-              ))}
-            </div>
+            <SitePhoto
+              src="/images/practice-office.png"
+              alt="Wingate Accountants meeting room"
+              className="mt-6 aspect-[4/3]"
+            />
           </div>
         </div>
       </section>
@@ -174,10 +165,13 @@ export default async function HomePage() {
           ]
             .slice(0, 3)
             .map((post) => (
-              <Link key={post.slug} href={post.path} className="rounded-xl border border-border bg-card p-6 hover:shadow-md">
+              <Link key={post.slug} href={post.path} className="overflow-hidden rounded-xl border border-border bg-card hover:shadow-md">
+                <CardPhoto slug={post.slug} className="rounded-none" />
+                <div className="p-6">
                 <h3 className="font-heading text-lg font-semibold leading-snug">{post.title}</h3>
                 <p className="mt-2 line-clamp-3 text-sm text-muted-foreground">{post.excerpt}</p>
                 <p className="mt-4 text-xs text-muted-foreground">{post.date}</p>
+                </div>
               </Link>
             ))}
         </div>

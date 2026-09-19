@@ -1,18 +1,19 @@
 -- =============================================================================
--- Wingate Accountants Ltd — paste this whole file into the Supabase SQL Editor
+-- Wingate Accountants Ltd — paste this WHOLE file into the Supabase SQL Editor
 -- Dashboard → SQL Editor → New query → paste → Run
 -- =============================================================================
 -- Safe to run more than once (CREATE IF NOT EXISTS, ON CONFLICT updates).
 -- Does not DROP tables or policies.
 -- firm_id for every row: wingate-accountants-ltd
 --
--- After it succeeds, add these to the Wingate app environment:
+-- After it succeeds, add these to the Wingate app / Vercel environment:
 --   SUPABASE_URL=https://YOUR-PROJECT.supabase.co
 --   SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
--- (Project Settings → API. Use the service role key only on the server.)
+--   DATABASE_URL=postgresql://...pooler...:5432/postgres?sslmode=require
+-- (Project Settings → API for keys; Project Settings → Database → URI for DATABASE_URL.
+--  Use the service role key only on the server. Never put it in the browser.)
 -- =============================================================================
 
--- ---------- Tax returns portal ----------
 -- Wingate tax returns portal
 -- Apply on Supabase when moving off the local JSON store.
 -- CREATE-only. Do not DROP POLICY.
@@ -175,7 +176,6 @@ begin
 end
 $policy$;
 
--- ---------- Packages catalog ----------
 -- Wingate accountancy packages catalog (schema)
 -- CREATE-only. Do not DROP POLICY / DROP TABLE.
 -- Safe to re-run: IF NOT EXISTS + additive columns.
@@ -314,7 +314,6 @@ grant select on wingate_package_groups, wingate_packages, wingate_package_featur
   to anon, authenticated;
 grant insert on wingate_package_selections to anon, authenticated;
 
--- ---------- Packages seed ----------
 -- Seed: Wingate packages, features, add-ons, groups, FAQs
 -- Generated from lib/packages/data.ts. Re-run emit-packages-sql.ts after catalog edits.
 -- Safe to re-run: INSERT ... ON CONFLICT updates in place. No DROP.
@@ -344,21 +343,28 @@ on conflict (id) do update set
   summary = excluded.summary,
   sort_order = excluded.sort_order;
 insert into wingate_package_groups (id, firm_id, name, summary, sort_order)
-values ($wingate$landlords$wingate$, $wingate$wingate-accountants-ltd$wingate$, $wingate$Landlords & Property Investors$wingate$, $wingate$Let property held personally or in a company, priced by how many units you hold.$wingate$, 3)
+values ($wingate$mtd$wingate$, $wingate$wingate-accountants-ltd$wingate$, $wingate$Making Tax Digital$wingate$, $wingate$Monthly MTD packages for sole traders and landlords in scope of MTD for Income Tax.$wingate$, 3)
 on conflict (id) do update set
   firm_id = excluded.firm_id,
   name = excluded.name,
   summary = excluded.summary,
   sort_order = excluded.sort_order;
 insert into wingate_package_groups (id, firm_id, name, summary, sort_order)
-values ($wingate$medical-professional$wingate$, $wingate$wingate-accountants-ltd$wingate$, $wingate$Medical & Professional Services$wingate$, $wingate$Locum doctors, pharmacists, opticians and similar professional practices.$wingate$, 4)
+values ($wingate$landlords$wingate$, $wingate$wingate-accountants-ltd$wingate$, $wingate$Landlords & Property Investors$wingate$, $wingate$Let property held personally or in a company, priced by how many units you hold.$wingate$, 4)
 on conflict (id) do update set
   firm_id = excluded.firm_id,
   name = excluded.name,
   summary = excluded.summary,
   sort_order = excluded.sort_order;
 insert into wingate_package_groups (id, firm_id, name, summary, sort_order)
-values ($wingate$ecommerce-online$wingate$, $wingate$wingate-accountants-ltd$wingate$, $wingate$E-commerce & Online Businesses$wingate$, $wingate$Online shops, marketplaces and creator businesses that sell digitally.$wingate$, 5)
+values ($wingate$medical-professional$wingate$, $wingate$wingate-accountants-ltd$wingate$, $wingate$Medical & Professional Services$wingate$, $wingate$Locum doctors, pharmacists, opticians and similar professional practices.$wingate$, 5)
+on conflict (id) do update set
+  firm_id = excluded.firm_id,
+  name = excluded.name,
+  summary = excluded.summary,
+  sort_order = excluded.sort_order;
+insert into wingate_package_groups (id, firm_id, name, summary, sort_order)
+values ($wingate$ecommerce-online$wingate$, $wingate$wingate-accountants-ltd$wingate$, $wingate$E-commerce & Online Businesses$wingate$, $wingate$Online shops, marketplaces and creator businesses that sell digitally.$wingate$, 6)
 on conflict (id) do update set
   firm_id = excluded.firm_id,
   name = excluded.name,
@@ -435,7 +441,7 @@ insert into wingate_packages (
   onboarding_kind, is_active, featured, updated_at
 ) values (
   $wingate$contractor-complete$wingate$, $wingate$wingate-accountants-ltd$wingate$, $wingate$contractor-complete$wingate$, $wingate$Contractor Complete$wingate$, $wingate$Limited company contractor$wingate$, $wingate$contractors-freelancers$wingate$,
-  119, 1285, $wingate$+ VAT$wingate$, $wingate$Pay 12 months at the company year start and the annual fee is 10% lower.$wingate$, $wingate$monthly$wingate$,
+  119, 1285, $wingate$$wingate$, $wingate$Pay 12 months at the company year start and the annual fee is 10% lower.$wingate$, $wingate$monthly$wingate$,
   $wingate$One monthly fee for a contracting company: accounts, corporation tax, VAT, payroll for two, and your own Self Assessment.$wingate$, $wingate$IT, engineering and professional contractors who invoice through a limited company and want a named accountant on speed-dial.$wingate$, $wingate$["Year-end accounts and CT600","One director Self Assessment","VAT returns when registered","Payroll for up to two people","Xero or QuickBooks included","Named accountant","Same-day reply before 3pm","Dividend paperwork and confirmation statement preparation"]$wingate$::jsonb, $wingate$["Companies House confirmation statement filing fee (available as an add-on)","Registered office address (available as an add-on)","Self Assessment for extra directors or shareholders","Payroll beyond two people","Company formation"]$wingate$::jsonb, $wingate${"yearEndAccounts":"Included","taxReturns":"Corporation tax (CT600) plus one director Self Assessment","vatSupport":"VAT returns included when you are registered","payrollSupport":"PAYE for up to two people","bookkeeping":"Quarterly bookkeeping review","cloudSoftware":"Xero or QuickBooks included","supportLevel":"Email, phone and video, with a named accountant","responseTime":"Same working day before 3pm"}$wingate$::jsonb, null,
   $wingate$practice$wingate$, true, true, now()
 )
@@ -467,7 +473,7 @@ insert into wingate_packages (
   onboarding_kind, is_active, featured, updated_at
 ) values (
   $wingate$freelancer-company$wingate$, $wingate$wingate-accountants-ltd$wingate$, $wingate$freelancer-company$wingate$, $wingate$Freelancer Company$wingate$, $wingate$Limited company freelancer$wingate$, $wingate$contractors-freelancers$wingate$,
-  113, 1220, $wingate$+ VAT$wingate$, $wingate$Pay 12 months at the company year start and the annual fee is 10% lower.$wingate$, $wingate$monthly$wingate$,
+  113, 1220, $wingate$$wingate$, $wingate$Pay 12 months at the company year start and the annual fee is 10% lower.$wingate$, $wingate$monthly$wingate$,
   $wingate$Accounts and tax for freelancers who have incorporated, with the same cloud books and named accountant as our contractor work.$wingate$, $wingate$Designers, consultants, developers and other independents trading through a limited company.$wingate$, $wingate$["Year-end accounts and CT600","One director Self Assessment","VAT returns when registered","Payroll for up to two people","Xero or QuickBooks included","Named accountant","Same-day reply before 3pm","Quarterly bookkeeping review"]$wingate$::jsonb, $wingate$["Companies House confirmation statement filing fee (available as an add-on)","Registered office address (available as an add-on)","Self Assessment for extra directors or shareholders","Payroll beyond two people","Company formation"]$wingate$::jsonb, $wingate${"yearEndAccounts":"Included","taxReturns":"Corporation tax (CT600) plus one director Self Assessment","vatSupport":"VAT returns included when you are registered","payrollSupport":"PAYE for up to two people","bookkeeping":"Quarterly bookkeeping review","cloudSoftware":"Xero or QuickBooks included","supportLevel":"Email, phone and video, with a named accountant","responseTime":"Same working day before 3pm"}$wingate$::jsonb, null,
   $wingate$practice$wingate$, true, false, now()
 )
@@ -499,7 +505,7 @@ insert into wingate_packages (
   onboarding_kind, is_active, featured, updated_at
 ) values (
   $wingate$small-company$wingate$, $wingate$wingate-accountants-ltd$wingate$, $wingate$small-company$wingate$, $wingate$Small Company$wingate$, $wingate$Limited company$wingate$, $wingate$limited-companies$wingate$,
-  113, 1220, $wingate$+ VAT$wingate$, $wingate$Pay 12 months at the company year start and the annual fee is 10% lower.$wingate$, $wingate$monthly$wingate$,
+  113, 1220, $wingate$$wingate$, $wingate$Pay 12 months at the company year start and the annual fee is 10% lower.$wingate$, $wingate$monthly$wingate$,
   $wingate$Fixed-fee accounts, corporation tax, VAT and payroll for a straightforward trading company.$wingate$, $wingate$Owner-managed limited companies with a simple structure and up to two people on payroll.$wingate$, $wingate$["Year-end accounts and CT600","One director Self Assessment","VAT returns when registered","Payroll for up to two people","Xero or QuickBooks included","Named accountant","Same-day reply before 3pm","Deadline reminders for HMRC and Companies House"]$wingate$::jsonb, $wingate$["Companies House confirmation statement filing fee (available as an add-on)","Registered office address (available as an add-on)","Self Assessment for extra directors or shareholders","Payroll beyond two people","Company formation"]$wingate$::jsonb, $wingate${"yearEndAccounts":"Included","taxReturns":"Corporation tax (CT600) plus one director Self Assessment","vatSupport":"VAT returns included when you are registered","payrollSupport":"PAYE for up to two people","bookkeeping":"Quarterly bookkeeping review","cloudSoftware":"Xero or QuickBooks included","supportLevel":"Email, phone and video, with a named accountant","responseTime":"Same working day before 3pm"}$wingate$::jsonb, null,
   $wingate$practice$wingate$, true, false, now()
 )
@@ -563,7 +569,7 @@ insert into wingate_packages (
   onboarding_kind, is_active, featured, updated_at
 ) values (
   $wingate$self-employed-accounts$wingate$, $wingate$wingate-accountants-ltd$wingate$, $wingate$self-employed-accounts$wingate$, $wingate$Self-Employed Accounts$wingate$, $wingate$Sole trader$wingate$, $wingate$sole-traders$wingate$,
-  59, 637, $wingate$+ VAT$wingate$, $wingate$Pay 12 months up front and the annual fee is 10% lower.$wingate$, $wingate$monthly$wingate$,
+  59, 637, $wingate$$wingate$, $wingate$Pay 12 months up front and the annual fee is 10% lower.$wingate$, $wingate$monthly$wingate$,
   $wingate$Bookkeeping support, VAT if you are registered, payroll for two, and Self Assessment for a sole trader.$wingate$, $wingate$Self-employed contractors and tradespeople who have not incorporated and want year-round cover, not a January scramble.$wingate$, $wingate$["Self Assessment prepared and filed","Year-end accounts for the business","VAT returns when registered","Payroll for up to two people","Xero or QuickBooks included","Named accountant","Same-day reply before 3pm","Quarterly bookkeeping review"]$wingate$::jsonb, $wingate$["Corporation tax and Companies House filings (this is not a limited company package)","Payroll beyond two people","Specialist tax enquiry defence cover (available as an add-on)"]$wingate$::jsonb, $wingate${"yearEndAccounts":"Year-end accounts for the self-employed","taxReturns":"Self Assessment (SA100 and business pages)","vatSupport":"VAT returns included when you are registered","payrollSupport":"PAYE for up to two people","bookkeeping":"Quarterly bookkeeping review","cloudSoftware":"Xero or QuickBooks included","supportLevel":"Email, phone and video, with a named accountant","responseTime":"Same working day before 3pm"}$wingate$::jsonb, null,
   $wingate$tax-return$wingate$, true, false, now()
 )
@@ -594,9 +600,9 @@ insert into wingate_packages (
   description, ideal_for, highlights, exclusions, comparison, property_bands,
   onboarding_kind, is_active, featured, updated_at
 ) values (
-  $wingate$mtd-essentials$wingate$, $wingate$wingate-accountants-ltd$wingate$, $wingate$mtd-essentials$wingate$, $wingate$MTD Essentials$wingate$, $wingate$Sole trader in scope of MTD$wingate$, $wingate$sole-traders$wingate$,
-  47, 508, $wingate$+ VAT$wingate$, $wingate$Software and MTD submissions. Full accounts advice sits on MTD Full Support or Self-Employed Accounts.$wingate$, $wingate$monthly$wingate$,
-  $wingate$Digital records software, MTD registration support and help with quarterly updates if you prefer to keep the books yourself.$wingate$, $wingate$Sole traders who are comfortable with their own bookkeeping and need an accountant only for MTD submissions.$wingate$, $wingate$["Xero or QuickBooks for digital records","Help registering for MTD for Income Tax","Quarterly update support","Year-end declaration support","Deadline reminders","Email support from a named accountant","Reply within one working day","Self Assessment filing for the year"]$wingate$::jsonb, $wingate$["Full quarterly bookkeeping reviews (choose MTD Full Support)","VAT and payroll unless added","Live MTD bridging from this website — that work is in development"]$wingate$::jsonb, $wingate${"yearEndAccounts":"Not a full accounts package","taxReturns":"Self Assessment plus MTD updates","vatSupport":"Not included","payrollSupport":"Not included","bookkeeping":"You keep the books; we submit","cloudSoftware":"Xero or QuickBooks included","supportLevel":"Email with a named accountant","responseTime":"Within one working day"}$wingate$::jsonb, null,
+  $wingate$mtd-essentials$wingate$, $wingate$wingate-accountants-ltd$wingate$, $wingate$mtd-essentials$wingate$, $wingate$MTD Comply$wingate$, $wingate$Basic monthly subscription$wingate$, $wingate$mtd$wingate$,
+  45, 486, $wingate$$wingate$, $wingate$The basic monthly MTD package. You keep the books; we handle setup, quarterly updates and the year-end declaration.$wingate$, $wingate$monthly$wingate$,
+  $wingate$Digital records software, MTD registration support and help with quarterly updates if you prefer to keep the books yourself.$wingate$, $wingate$Sole traders, landlords and CIS subcontractors who are comfortable with their own bookkeeping and need an accountant for MTD submissions.$wingate$, $wingate$["Xero or QuickBooks for digital records","Help registering for MTD for Income Tax","Quarterly update support","Year-end declaration support","Deadline reminders","Email support from a named accountant","Reply within one working day","Self Assessment filing for the year"]$wingate$::jsonb, $wingate$["Full quarterly bookkeeping reviews (choose MTD Complete)","VAT and payroll unless added","Live MTD bridging from this website — that work is in development"]$wingate$::jsonb, $wingate${"yearEndAccounts":"Not a full accounts package","taxReturns":"Self Assessment plus MTD updates","vatSupport":"Not included","payrollSupport":"Not included","bookkeeping":"You keep the books; we submit","cloudSoftware":"Xero or QuickBooks included","supportLevel":"Email with a named accountant","responseTime":"Within one working day"}$wingate$::jsonb, null,
   $wingate$tax-return$wingate$, true, false, now()
 )
 on conflict (id) do update set
@@ -626,10 +632,10 @@ insert into wingate_packages (
   description, ideal_for, highlights, exclusions, comparison, property_bands,
   onboarding_kind, is_active, featured, updated_at
 ) values (
-  $wingate$mtd-full$wingate$, $wingate$wingate-accountants-ltd$wingate$, $wingate$mtd-full$wingate$, $wingate$MTD Full Support$wingate$, $wingate$Sole trader wanting accountant-led MTD$wingate$, $wingate$sole-traders$wingate$,
-  75, 810, $wingate$+ VAT$wingate$, $wingate$$wingate$, $wingate$monthly$wingate$,
-  $wingate$A named accountant reviews the books, supports VAT, payroll and CIS where needed, and keeps you on the MTD calendar.$wingate$, $wingate$Self-employed people who want an accountant involved all year, not only at the quarterly click.$wingate$, $wingate$["Named accountant and bookkeeping reviews","MTD quarterly updates and final declaration","Self Assessment included","VAT and payroll support when you need it","CIS support where it applies","Xero or QuickBooks included","Same-day reply before 3pm","Deadline reminders"]$wingate$::jsonb, $wingate$["Live MTD bridging from this website — that work is in development","Payroll beyond two people"]$wingate$::jsonb, $wingate${"yearEndAccounts":"Self-employed accounts included","taxReturns":"Self Assessment plus MTD updates","vatSupport":"Supported when registered","payrollSupport":"Supported for up to two people","bookkeeping":"Regular reviews by your accountant","cloudSoftware":"Xero or QuickBooks included","supportLevel":"Email, phone and video, with a named accountant","responseTime":"Same working day before 3pm"}$wingate$::jsonb, null,
-  $wingate$tax-return$wingate$, true, false, now()
+  $wingate$mtd-full$wingate$, $wingate$wingate-accountants-ltd$wingate$, $wingate$mtd-full$wingate$, $wingate$MTD Complete$wingate$, $wingate$Accountant-led monthly$wingate$, $wingate$mtd$wingate$,
+  65, 702, $wingate$$wingate$, $wingate$$wingate$, $wingate$monthly$wingate$,
+  $wingate$A named accountant reviews the books, supports VAT, payroll and CIS where needed, and keeps you on the MTD calendar.$wingate$, $wingate$Self-employed people and landlords who want an accountant involved all year, not only at the quarterly click.$wingate$, $wingate$["Named accountant and bookkeeping reviews","MTD quarterly updates and final declaration","Self Assessment included","VAT and payroll support when you need it","CIS support where it applies","Xero or QuickBooks included","Same-day reply before 3pm","Deadline reminders"]$wingate$::jsonb, $wingate$["Live MTD bridging from this website — that work is in development","Payroll beyond two people"]$wingate$::jsonb, $wingate${"yearEndAccounts":"Self-employed accounts included","taxReturns":"Self Assessment plus MTD updates","vatSupport":"Supported when registered","payrollSupport":"Supported for up to two people","bookkeeping":"Regular reviews by your accountant","cloudSoftware":"Xero or QuickBooks included","supportLevel":"Email, phone and video, with a named accountant","responseTime":"Same working day before 3pm"}$wingate$::jsonb, null,
+  $wingate$tax-return$wingate$, true, true, now()
 )
 on conflict (id) do update set
   firm_id = excluded.firm_id,
@@ -659,7 +665,7 @@ insert into wingate_packages (
   onboarding_kind, is_active, featured, updated_at
 ) values (
   $wingate$personal-self-assessment$wingate$, $wingate$wingate-accountants-ltd$wingate$, $wingate$personal-self-assessment$wingate$, $wingate$Personal Self Assessment$wingate$, $wingate$Individual (PAYE, savings, simple SA)$wingate$, $wingate$sole-traders$wingate$,
-  null, 190, $wingate$+ VAT$wingate$, $wingate$One annual fee for a personal return. Business, property or contractor work uses a monthly package instead.$wingate$, $wingate$annual$wingate$,
+  null, 250, $wingate$$wingate$, $wingate$One annual fee of £250 for a personal return. Mixed income, reliefs review or HMRC letter cover uses Optimised & Protected at £325. Year-round support is £25 a month.$wingate$, $wingate$annual$wingate$,
   $wingate$A named accountant prepares and files one personal Self Assessment. Use this when you do not need year-round company or sole-trader cover.$wingate$, $wingate$Employees with extra income, simple investment income, or anyone who only needs the annual SA100 handled.$wingate$, $wingate$["SA100 prepared by an accountant","Filed with HMRC after you approve it","Identity checks as part of onboarding","Portal messages with your accountant","Deadline reminders","Clear fixed fee"]$wingate$::jsonb, $wingate$["Year-round bookkeeping","VAT, payroll and company filings","Complex supplementary pages may be quoted"]$wingate$::jsonb, $wingate${"yearEndAccounts":"Not included","taxReturns":"One personal Self Assessment","vatSupport":"Not included","payrollSupport":"Not included","bookkeeping":"Not included","cloudSoftware":"Not required","supportLevel":"Portal, email and phone","responseTime":"Within one working day"}$wingate$::jsonb, null,
   $wingate$tax-return$wingate$, true, false, now()
 )
@@ -691,7 +697,7 @@ insert into wingate_packages (
   onboarding_kind, is_active, featured, updated_at
 ) values (
   $wingate$landlord-personal$wingate$, $wingate$wingate-accountants-ltd$wingate$, $wingate$landlord-personal$wingate$, $wingate$Personal Landlord$wingate$, $wingate$Individual landlord$wingate$, $wingate$landlords$wingate$,
-  59, 637, $wingate$+ VAT$wingate$, $wingate$Fee follows the number of properties. Six or more is quoted.$wingate$, $wingate$monthly$wingate$,
+  59, 637, $wingate$$wingate$, $wingate$Fee follows the number of properties. Six or more is quoted.$wingate$, $wingate$monthly$wingate$,
   $wingate$Property income, allowable costs and Self Assessment for lets held in your own name, with software included.$wingate$, $wingate$Buy-to-let owners who report rental income on a personal tax return.$wingate$, $wingate$["Property income accounts","Self Assessment with property pages","Finance-cost restriction handled","Xero or QuickBooks included","Named accountant","Same-day reply before 3pm","Deadline reminders","Priced by how many properties you hold"]$wingate$::jsonb, $wingate$["Company accounts (use Property Company)","Six or more properties until quoted"]$wingate$::jsonb, $wingate${"yearEndAccounts":"Property income accounts","taxReturns":"Self Assessment with UK property pages","vatSupport":"Only if VAT-registered (uncommon)","payrollSupport":"Not included","bookkeeping":"Quarterly review of rents and costs","cloudSoftware":"Xero or QuickBooks included","supportLevel":"Email, phone and video, with a named accountant","responseTime":"Same working day before 3pm"}$wingate$::jsonb, $wingate$[{"properties":"1–2","monthlyPrice":59},{"properties":"3","monthlyPrice":59},{"properties":"4","monthlyPrice":68},{"properties":"5","monthlyPrice":78},{"properties":"6+","monthlyPrice":null}]$wingate$::jsonb,
   $wingate$tax-return$wingate$, true, false, now()
 )
@@ -723,7 +729,7 @@ insert into wingate_packages (
   onboarding_kind, is_active, featured, updated_at
 ) values (
   $wingate$landlord-company$wingate$, $wingate$wingate-accountants-ltd$wingate$, $wingate$landlord-company$wingate$, $wingate$Property Company$wingate$, $wingate$Limited company landlord$wingate$, $wingate$landlords$wingate$,
-  59, 637, $wingate$+ VAT$wingate$, $wingate$Fee follows the number of properties. Six or more is quoted.$wingate$, $wingate$monthly$wingate$,
+  59, 637, $wingate$$wingate$, $wingate$Fee follows the number of properties. Six or more is quoted.$wingate$, $wingate$monthly$wingate$,
   $wingate$Company accounts, corporation tax and property bookkeeping for lets held in a limited company.$wingate$, $wingate$Landlords who hold property in a company and need Companies House and HMRC kept in step.$wingate$, $wingate$["Year-end accounts and CT600","Property bookkeeping reviews","One director Self Assessment","Xero or QuickBooks included","Named accountant","Same-day reply before 3pm","Confirmation statement preparation","Priced by how many properties you hold"]$wingate$::jsonb, $wingate$["Companies House confirmation statement filing fee (available as an add-on)","Registered office address (available as an add-on)","Self Assessment for extra directors or shareholders","Payroll beyond two people","Company formation"]$wingate$::jsonb, $wingate${"yearEndAccounts":"Company accounts including rental activity","taxReturns":"Corporation tax (CT600) plus one director Self Assessment","vatSupport":"VAT returns included when you are registered","payrollSupport":"PAYE for up to two people","bookkeeping":"Quarterly property bookkeeping review","cloudSoftware":"Xero or QuickBooks included","supportLevel":"Email, phone and video, with a named accountant","responseTime":"Same working day before 3pm"}$wingate$::jsonb, $wingate$[{"properties":"1–2","monthlyPrice":59},{"properties":"3","monthlyPrice":78},{"properties":"4","monthlyPrice":87},{"properties":"5","monthlyPrice":97},{"properties":"6+","monthlyPrice":null}]$wingate$::jsonb,
   $wingate$practice$wingate$, true, false, now()
 )
@@ -755,7 +761,7 @@ insert into wingate_packages (
   onboarding_kind, is_active, featured, updated_at
 ) values (
   $wingate$locum-medical$wingate$, $wingate$wingate-accountants-ltd$wingate$, $wingate$locum-medical$wingate$, $wingate$Locum & Medical$wingate$, $wingate$Locum / medical professional (limited company)$wingate$, $wingate$medical-professional$wingate$,
-  119, 1285, $wingate$+ VAT$wingate$, $wingate$$wingate$, $wingate$monthly$wingate$,
+  119, 1285, $wingate$$wingate$, $wingate$$wingate$, $wingate$monthly$wingate$,
   $wingate$The full company package, tuned for locum doctors, pharmacists, opticians and similar professionals who invoice through a company.$wingate$, $wingate$Medical locums and allied professionals who need status references, payroll and a named accountant who has seen this work before.$wingate$, $wingate$["Year-end accounts and CT600","One director Self Assessment","VAT returns when registered","Payroll for up to two people","Status references for agencies","Xero or QuickBooks included","Named accountant","Same-day reply before 3pm"]$wingate$::jsonb, $wingate$["Companies House confirmation statement filing fee (available as an add-on)","Registered office address (available as an add-on)","Self Assessment for extra directors or shareholders","Payroll beyond two people","Company formation"]$wingate$::jsonb, $wingate${"yearEndAccounts":"Included","taxReturns":"Corporation tax (CT600) plus one director Self Assessment","vatSupport":"VAT returns included when you are registered","payrollSupport":"PAYE for up to two people","bookkeeping":"Quarterly bookkeeping review","cloudSoftware":"Xero or QuickBooks included","supportLevel":"Email, phone and video, with a named accountant","responseTime":"Same working day before 3pm"}$wingate$::jsonb, null,
   $wingate$practice$wingate$, true, false, now()
 )
@@ -787,7 +793,7 @@ insert into wingate_packages (
   onboarding_kind, is_active, featured, updated_at
 ) values (
   $wingate$ecommerce-company$wingate$, $wingate$wingate-accountants-ltd$wingate$, $wingate$ecommerce-company$wingate$, $wingate$Online Retail Company$wingate$, $wingate$E-commerce limited company$wingate$, $wingate$ecommerce-online$wingate$,
-  113, 1220, $wingate$+ VAT$wingate$, $wingate$$wingate$, $wingate$monthly$wingate$,
+  113, 1220, $wingate$$wingate$, $wingate$$wingate$, $wingate$monthly$wingate$,
   $wingate$Company accounts and VAT-ready books for shops that sell online, including marketplace sellers who have incorporated.$wingate$, $wingate$Shopify, Amazon and similar sellers trading through a UK limited company with standard volumes.$wingate$, $wingate$["Year-end accounts and CT600","VAT returns when registered","One director Self Assessment","Payroll for up to two people","Xero or QuickBooks included","Named accountant","Same-day reply before 3pm","Quarterly bookkeeping review"]$wingate$::jsonb, $wingate$["Companies House confirmation statement filing fee (available as an add-on)","Registered office address (available as an add-on)","Self Assessment for extra directors or shareholders","Payroll beyond two people","Company formation","High-volume multi-channel bookkeeping may be quoted as Growing Business"]$wingate$::jsonb, $wingate${"yearEndAccounts":"Included","taxReturns":"Corporation tax (CT600) plus one director Self Assessment","vatSupport":"VAT returns included when you are registered","payrollSupport":"PAYE for up to two people","bookkeeping":"Quarterly bookkeeping review","cloudSoftware":"Xero or QuickBooks included","supportLevel":"Email, phone and video, with a named accountant","responseTime":"Same working day before 3pm"}$wingate$::jsonb, null,
   $wingate$practice$wingate$, true, false, now()
 )
@@ -819,7 +825,7 @@ insert into wingate_packages (
   onboarding_kind, is_active, featured, updated_at
 ) values (
   $wingate$creator-influencer$wingate$, $wingate$wingate-accountants-ltd$wingate$, $wingate$creator-influencer$wingate$, $wingate$Creator & Influencer$wingate$, $wingate$Creator / influencer (limited company)$wingate$, $wingate$ecommerce-online$wingate$,
-  119, 1285, $wingate$+ VAT$wingate$, $wingate$$wingate$, $wingate$monthly$wingate$,
+  119, 1285, $wingate$$wingate$, $wingate$$wingate$, $wingate$monthly$wingate$,
   $wingate$Company accounts for creators who invoice brands, take platform income and need drawings, VAT and a personal return kept tidy.$wingate$, $wingate$Social media, YouTube and similar creators who have incorporated or are about to.$wingate$, $wingate$["Year-end accounts and CT600","One director Self Assessment","VAT returns when registered","Payroll for up to two people","Xero or QuickBooks included","Named accountant","Same-day reply before 3pm","Help claiming genuine business costs"]$wingate$::jsonb, $wingate$["Companies House confirmation statement filing fee (available as an add-on)","Registered office address (available as an add-on)","Self Assessment for extra directors or shareholders","Payroll beyond two people","Company formation"]$wingate$::jsonb, $wingate${"yearEndAccounts":"Included","taxReturns":"Corporation tax (CT600) plus one director Self Assessment","vatSupport":"VAT returns included when you are registered","payrollSupport":"PAYE for up to two people","bookkeeping":"Quarterly bookkeeping review","cloudSoftware":"Xero or QuickBooks included","supportLevel":"Email, phone and video, with a named accountant","responseTime":"Same working day before 3pm"}$wingate$::jsonb, null,
   $wingate$practice$wingate$, true, false, now()
 )
@@ -1369,7 +1375,7 @@ insert into wingate_addons (
   applicable_package_types, is_active, source, updated_at
 ) values (
   $wingate$company-formation$wingate$, $wingate$wingate-accountants-ltd$wingate$, $wingate$company-formation$wingate$, $wingate$Company formation$wingate$, $wingate$We incorporate the company at Companies House, issue the first documents and hand you a company ready to bank and trade.$wingate$,
-  152, $wingate$inc VAT$wingate$, $wingate$one-off$wingate$,
+  150, $wingate$$wingate$, $wingate$one-off$wingate$,
   ARRAY[$wingate$limited-companies$wingate$, $wingate$contractors-freelancers$wingate$, $wingate$medical-professional$wingate$, $wingate$ecommerce-online$wingate$, $wingate$landlords$wingate$]::text[], true, $wingate$mapped$wingate$, now()
 )
 on conflict (id) do update set
@@ -1389,7 +1395,7 @@ insert into wingate_addons (
   applicable_package_types, is_active, source, updated_at
 ) values (
   $wingate$registered-office$wingate$, $wingate$wingate-accountants-ltd$wingate$, $wingate$registered-office$wingate$, $wingate$Registered office$wingate$, $wingate$Use Wingate as the company’s registered office. We scan and pass on Companies House and statutory mail.$wingate$,
-  9.5, $wingate$+ VAT$wingate$, $wingate$per month$wingate$,
+  9.5, $wingate$$wingate$, $wingate$per month$wingate$,
   ARRAY[$wingate$limited-companies$wingate$, $wingate$contractors-freelancers$wingate$, $wingate$medical-professional$wingate$, $wingate$ecommerce-online$wingate$, $wingate$landlords$wingate$]::text[], true, $wingate$mapped$wingate$, now()
 )
 on conflict (id) do update set
@@ -1409,7 +1415,7 @@ insert into wingate_addons (
   applicable_package_types, is_active, source, updated_at
 ) values (
   $wingate$extra-director-sa$wingate$, $wingate$wingate-accountants-ltd$wingate$, $wingate$extra-director-sa$wingate$, $wingate$Extra director Self Assessment$wingate$, $wingate$A further personal tax return for an additional director or shareholder. Extra pages may be quoted if the return is complex.$wingate$,
-  143, $wingate$+ VAT$wingate$, $wingate$per return$wingate$,
+  143, $wingate$$wingate$, $wingate$per return$wingate$,
   ARRAY[$wingate$limited-companies$wingate$, $wingate$contractors-freelancers$wingate$, $wingate$medical-professional$wingate$, $wingate$ecommerce-online$wingate$, $wingate$landlords$wingate$]::text[], true, $wingate$mapped$wingate$, now()
 )
 on conflict (id) do update set
@@ -1429,7 +1435,7 @@ insert into wingate_addons (
   applicable_package_types, is_active, source, updated_at
 ) values (
   $wingate$confirmation-filing$wingate$, $wingate$wingate-accountants-ltd$wingate$, $wingate$confirmation-filing$wingate$, $wingate$Confirmation statement filing$wingate$, $wingate$We submit the confirmation statement to Companies House. Preparation is already in company packages; this covers the filing itself.$wingate$,
-  48, $wingate$+ VAT$wingate$, $wingate$per filing$wingate$,
+  48, $wingate$$wingate$, $wingate$per filing$wingate$,
   ARRAY[$wingate$limited-companies$wingate$, $wingate$contractors-freelancers$wingate$, $wingate$medical-professional$wingate$, $wingate$ecommerce-online$wingate$, $wingate$landlords$wingate$]::text[], true, $wingate$mapped$wingate$, now()
 )
 on conflict (id) do update set
@@ -1449,7 +1455,7 @@ insert into wingate_addons (
   applicable_package_types, is_active, source, updated_at
 ) values (
   $wingate$additional-company$wingate$, $wingate$wingate-accountants-ltd$wingate$, $wingate$additional-company$wingate$, $wingate$Additional company$wingate$, $wingate$A second UK company on the same ownership, with accounts and corporation tax at a reduced extra-entity fee.$wingate$,
-  95, $wingate$+ VAT$wingate$, $wingate$per month$wingate$,
+  95, $wingate$$wingate$, $wingate$per month$wingate$,
   ARRAY[$wingate$limited-companies$wingate$, $wingate$contractors-freelancers$wingate$, $wingate$ecommerce-online$wingate$, $wingate$landlords$wingate$]::text[], true, $wingate$wingate$wingate$, now()
 )
 on conflict (id) do update set
@@ -1469,8 +1475,8 @@ insert into wingate_addons (
   applicable_package_types, is_active, source, updated_at
 ) values (
   $wingate$extra-payroll$wingate$, $wingate$wingate-accountants-ltd$wingate$, $wingate$extra-payroll$wingate$, $wingate$Extra payroll person$wingate$, $wingate$PAYE for each employee or director beyond the two already included in standard monthly packages.$wingate$,
-  8, $wingate$+ VAT$wingate$, $wingate$per person / month$wingate$,
-  ARRAY[$wingate$limited-companies$wingate$, $wingate$contractors-freelancers$wingate$, $wingate$sole-traders$wingate$, $wingate$medical-professional$wingate$, $wingate$ecommerce-online$wingate$]::text[], true, $wingate$wingate$wingate$, now()
+  8, $wingate$$wingate$, $wingate$per person / month$wingate$,
+  ARRAY[$wingate$limited-companies$wingate$, $wingate$contractors-freelancers$wingate$, $wingate$sole-traders$wingate$, $wingate$mtd$wingate$, $wingate$medical-professional$wingate$, $wingate$ecommerce-online$wingate$]::text[], true, $wingate$wingate$wingate$, now()
 )
 on conflict (id) do update set
   firm_id = excluded.firm_id,
@@ -1489,8 +1495,8 @@ insert into wingate_addons (
   applicable_package_types, is_active, source, updated_at
 ) values (
   $wingate$tax-enquiry-cover$wingate$, $wingate$wingate-accountants-ltd$wingate$, $wingate$tax-enquiry-cover$wingate$, $wingate$Tax enquiry cover$wingate$, $wingate$Insurance-backed help if HMRC opens a routine enquiry into a return we have prepared. Terms are confirmed at engagement.$wingate$,
-  15, $wingate$+ VAT$wingate$, $wingate$per month, from$wingate$,
-  ARRAY[$wingate$limited-companies$wingate$, $wingate$contractors-freelancers$wingate$, $wingate$sole-traders$wingate$, $wingate$landlords$wingate$, $wingate$medical-professional$wingate$, $wingate$ecommerce-online$wingate$]::text[], true, $wingate$wingate$wingate$, now()
+  15, $wingate$$wingate$, $wingate$per month, from$wingate$,
+  ARRAY[$wingate$limited-companies$wingate$, $wingate$contractors-freelancers$wingate$, $wingate$sole-traders$wingate$, $wingate$mtd$wingate$, $wingate$landlords$wingate$, $wingate$medical-professional$wingate$, $wingate$ecommerce-online$wingate$]::text[], true, $wingate$wingate$wingate$, now()
 )
 on conflict (id) do update set
   firm_id = excluded.firm_id,
@@ -1509,8 +1515,8 @@ insert into wingate_addons (
   applicable_package_types, is_active, source, updated_at
 ) values (
   $wingate$advisory-session$wingate$, $wingate$wingate-accountants-ltd$wingate$, $wingate$advisory-session$wingate$, $wingate$Specialist advisory session$wingate$, $wingate$A booked video session on a defined topic — incorporation, property structuring, or a one-off planning question.$wingate$,
-  95, $wingate$+ VAT$wingate$, $wingate$per session$wingate$,
-  ARRAY[$wingate$limited-companies$wingate$, $wingate$contractors-freelancers$wingate$, $wingate$sole-traders$wingate$, $wingate$landlords$wingate$, $wingate$medical-professional$wingate$, $wingate$ecommerce-online$wingate$]::text[], true, $wingate$wingate$wingate$, now()
+  95, $wingate$$wingate$, $wingate$per session$wingate$,
+  ARRAY[$wingate$limited-companies$wingate$, $wingate$contractors-freelancers$wingate$, $wingate$sole-traders$wingate$, $wingate$mtd$wingate$, $wingate$landlords$wingate$, $wingate$medical-professional$wingate$, $wingate$ecommerce-online$wingate$]::text[], true, $wingate$wingate$wingate$, now()
 )
 on conflict (id) do update set
   firm_id = excluded.firm_id,
@@ -1606,7 +1612,9 @@ begin
 end
 $policy$;
 
--- Practice OS (RBAC, CMS, Stripe, CRM, deadlines). CREATE-only.
+-- Wingate practice OS: CMS, Stripe, CRM, AML extra, deadlines, audit.
+-- CREATE-only. Do not DROP. Safe to re-run.
+
 create table if not exists wingate_practice_json_store (
   firm_id text primary key,
   dump jsonb not null,

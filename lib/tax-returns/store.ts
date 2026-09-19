@@ -242,7 +242,7 @@ class TaxReturnsStore {
       taxYear: TAX_YEAR,
       planId: "optimised",
       status: "accountant_review",
-      amountGbp: 479,
+      amountGbp: 325,
       payment: { provider: "mock", status: "paid", sessionId: "sess_demo", paidAt: createdAt },
       taxSummary: null,
       createdAt,

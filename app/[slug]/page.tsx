@@ -5,12 +5,22 @@ import { notFound } from "next/navigation";
 import { CmsHtml } from "@/components/cms-html";
 import { ButtonLink } from "@/components/button-link";
 import { ContactForm } from "@/components/contact-form";
+import { HeroWithPhoto, photoForSlug } from "@/components/site-photo";
+import { ServicePageEnd } from "@/components/service-page-end";
+import { isServiceSlug } from "@/lib/service-pages";
 import { getPage, getPages, getPost, getPosts, relatedPosts } from "@/lib/content";
 import { SITE } from "@/lib/site";
 import { practiceStore } from "@/lib/practice/store";
 import { safeJsonLd } from "@/lib/security/html";
 
-const DEDICATED_SLUGS = new Set(["tax-investigations", "online-tax-return-preparation-service"]);
+const DEDICATED_SLUGS = new Set([
+  "tax-investigations",
+  "online-tax-return-preparation-service",
+  "self-assessment-tax-returns",
+  "making-tax-digital-for-income-tax",
+  "making-tax-digital-mtd-accountancy-packages",
+  "company-formation",
+]);
 
 export const dynamic = "force-dynamic";
 
@@ -75,26 +85,41 @@ export default async function CmsSlugPage({ params }: Props) {
       {jsonLd ? (
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }} />
       ) : null}
-      <header className="bg-primary text-primary-foreground">
-        <div className="mx-auto max-w-3xl px-4 py-14 sm:px-6">
-          {isPost ? (
-            <Link href="/blog/" className="text-sm text-primary-foreground/70 hover:text-white">
-              ← Blog
-            </Link>
+      <HeroWithPhoto
+        kicker={isPost ? "Wingate Accountants · Blog" : "Wingate Accountants · Services"}
+        title={title}
+        imageSrc={photoForSlug(slug).src}
+        imageAlt={photoForSlug(slug).alt}
+        actions={
+          isPost ? (
+            <ButtonLink
+              href="/blog/"
+              variant="outline"
+              className="h-11 border-white/30 bg-transparent px-5 text-primary-foreground hover:bg-white/10 hover:text-white"
+            >
+              ← All articles
+            </ButtonLink>
           ) : (
-            <Link href="/services/" className="text-sm text-primary-foreground/70 hover:text-white">
-              ← Services
-            </Link>
-          )}
-          <h1 className="font-heading mt-4 text-3xl font-bold leading-tight sm:text-4xl">{title}</h1>
-          {post ? (
-            <p className="mt-4 text-sm text-primary-foreground/75">
-              {post.date} · {SITE.name}
-              {post.source === "extra" ? " · extra guide" : ""}
-            </p>
-          ) : null}
-        </div>
-      </header>
+            <ButtonLink
+              href="/contact-us/"
+              className="h-11 bg-accent px-5 text-accent-foreground hover:bg-accent/90"
+            >
+              Talk to an accountant
+            </ButtonLink>
+          )
+        }
+      >
+        {post ? (
+          <p className="text-sm text-primary-foreground/75">
+            {post.date} · {SITE.name}
+            {post.source === "extra" ? " · extra guide" : ""}
+          </p>
+        ) : override?.description || record?.description ? (
+          <p>{override?.description || record?.description}</p>
+        ) : (
+          <p>Chartered accountants in London, working with clients across the UK.</p>
+        )}
+      </HeroWithPhoto>
       <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6">
         <CmsHtml html={html} />
         {slug === "contact-us" ? (
@@ -104,18 +129,8 @@ export default async function CmsSlugPage({ params }: Props) {
             </Suspense>
           </div>
         ) : null}
-          {record?.kind === "page" && slug !== "contact-us" && slug !== "thank-you" && slug !== "privacy-policy" ? (
-          <div className="mt-12 rounded-xl bg-primary p-6 text-primary-foreground">
-            <h2 className="font-heading text-xl font-semibold">Talk to {SITE.name}</h2>
-            <p className="mt-2 text-sm text-primary-foreground/80">
-              {SITE.address}. {SITE.phone}. {SITE.email}.
-            </p>
-            <ButtonLink href="/contact-us/" className="mt-4 h-10 bg-accent px-4 text-accent-foreground hover:bg-accent/90">
-              Contact us
-            </ButtonLink>
-          </div>
-        ) : null}
       </div>
+      {!isPost && isServiceSlug(slug) ? <ServicePageEnd slug={slug} /> : null}
       {related.length ? (
         <section className="border-t border-border bg-secondary/50 py-12">
           <div className="mx-auto max-w-6xl px-4 sm:px-6">

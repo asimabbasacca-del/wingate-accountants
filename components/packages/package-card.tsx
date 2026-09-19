@@ -30,7 +30,7 @@ export function PackageCard({ pkg }: { pkg: Package }) {
       </p>
       {pkg.annualPrice != null && pkg.billing === "monthly" ? (
         <p className="mt-1 text-sm text-muted-foreground">
-          Or {formatMoney(pkg.annualPrice)} {pkg.vatNote} if you pay 12 months at once
+          Or {formatMoney(pkg.annualPrice)} if you pay 12 months at once
         </p>
       ) : null}
       {pkg.priceNote ? <p className="mt-2 text-xs text-muted-foreground">{pkg.priceNote}</p> : null}
@@ -68,7 +68,7 @@ export function PackageCard({ pkg }: { pkg: Package }) {
                 <tr key={band.properties} className="border-t border-border">
                   <td className="px-3 py-2">{band.properties}</td>
                   <td className="px-3 py-2">
-                    {band.monthlyPrice == null ? "Quote" : `${formatMoney(band.monthlyPrice)} + VAT`}
+                    {band.monthlyPrice == null ? "Quote" : formatMoney(band.monthlyPrice)}
                   </td>
                 </tr>
               ))}

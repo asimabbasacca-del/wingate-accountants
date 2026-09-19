@@ -272,7 +272,7 @@ export async function dispatchPractice(req: NextRequest, path: string[]): Promis
           slug: body.slug || body.id,
           clientType: body.clientType || "Limited company",
           groupId: body.groupId || "limited-companies",
-          vatNote: body.vatNote || "+ VAT",
+          vatNote: body.vatNote || "",
           billing: body.billing || "monthly",
           description: body.description || "",
           idealFor: body.idealFor || "",

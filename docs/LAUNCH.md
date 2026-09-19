@@ -1,5 +1,7 @@
 # Launch Wingate on Supabase + Vercel
 
+Copy-paste checklist: `docs/GO_LIVE.md` (Supabase SQL, GitHub repo fields, Vercel env).
+
 This folder is the **Wingate Accountants** website only. Use it as the Vercel root. Do not deploy the repository root.
 
 ## What goes where
